@@ -1,0 +1,60 @@
+---
+title: ER Diagram
+---
+erDiagram
+    projects }o--|| project_masters : "managed by"
+    projects {
+        serial id PK
+        int project_master_id FK "NOT NULL"
+        text name "NOT NULL"
+    }
+    users }o..|| projects : "contains"
+    users {
+        serial id PK
+        int team_id FK
+        text name "NOT NULL"
+    }
+    developers |o--|| users : "type of"
+    developers |o..o| tasks : "working on"
+    developers {
+        int user_id FK, UK "NOT NULL"
+        int task_id FK, UK
+    }
+    product_owners |o--|| users : "type of"
+    product_owners {
+        int user_id FK, UK "NOT NULL"
+    }
+    project_masters |o--|| users : "type of"
+    project_masters {
+        int user_id FK, UK "NOT NULL" 
+    }
+    tasks }o--|| projects : "linked to"
+    tasks }o--|| product_owners : "owned by"
+    tasks {
+        serial id PK
+        int team_id FK "NOT NULL"
+        int product_owner_id FK "NOT NULL"
+        boolean completed "NOT NULL"
+        int estimate_minutes "NOT NULL"
+        int spent_minutes "NOT NULL"
+        timestampz started_at
+        timestampz completed_at
+        text title "NOT NULL"
+        text description
+    }
+    task_logs }o--|| developers : "logged by"
+    task_logs }o--|| tasks : "logged from"
+    task_logs }o--|| task_statuses : "contains"
+    task_logs {
+        serial id PK
+        int developer_id FK "NOT NULL"
+        int task_id FK "NOT NULL"
+        int task_status_id FK "NOT NULL"
+        timestampz logged_at "NOT NULL"
+        text title "NOT NULL"
+        text description
+    }
+    task_statuses {
+        int id PK
+        text type "NOT NULL"
+    }
