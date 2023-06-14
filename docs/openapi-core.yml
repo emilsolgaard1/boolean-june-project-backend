@@ -1,0 +1,500 @@
+openapi: 3.0.3
+info:
+  title: Boolean June Project - Backend
+  description: Scrum-like team management tool
+  version: 0.2.2
+
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: users
+  - name: projects
+  - name: tasks
+  - name: task-logs
+paths:
+
+
+  #region // USERS //
+
+  /users:
+
+    post:
+      tags:
+        - users
+      summary: Create a user
+      description: Creates a new user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        201:
+          description: Created successfully.
+
+  /projects/{project_id}/users:
+
+    get:
+      tags:
+        - users
+      summary: Get all users for a project
+      description: Get a list of all users in a specific project.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllUsers'
+
+    put:
+      tags:
+        - users
+      summary: Assign users to a project
+      description: Assign a list of users to an existing project.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllUsersIds'
+      responses:
+        201:
+          description: Updated successfully.
+
+  #endregion
+
+  #region // PROJECTS //
+
+  /projects:
+
+    post:
+      tags:
+        - projects
+      summary: Create a project
+      description: Create a new project.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProject'
+      responses:
+        201:
+          description: Created successfully.
+
+  /projects/{project_id}:
+
+    get:
+      tags:
+        - projects
+      summary: Get a project by ID
+      description: Get a specific project by its ID.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  #endregion
+
+  #region // TASKS //
+
+  /tasks:
+
+    post:
+      tags:
+        - tasks
+      summary: Create a task
+      description: Create a new task.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTask'
+      responses:
+        201:
+          description: Created successfully.
+
+  /tasks/{task_id}:
+
+    put:
+      tags:
+        - tasks
+      summary: Update a task
+      description: Update an existing task.
+      parameters:
+        - name: task_id
+          in: path
+          description: The ID of the task
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTask'
+      responses:
+        201:
+          description: Updated successfully.
+
+    delete:
+      tags:
+        - tasks
+      summary: Delete a task
+      description: Delete an existing task.
+      parameters:
+        - name: task_id
+          in: path
+          description: The ID of the task
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Deleted successfully.
+
+  /projects/{project_id}/tasks:
+    get:
+      tags:
+        - tasks
+      summary: Get all tasks for a project
+      description: Get a list of all tasks for a given project.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllTasks'
+
+  /projects/{project_id}/completed-tasks:
+    get:
+      tags:
+        - tasks
+      summary: Get all completed tasks for a project
+      description: Get a list of all completed tasks for a given project.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllTasks'
+
+  #endregion
+
+  #region // TASK-LOGS //
+
+  /task-logs:
+
+    post:
+      tags:
+        - task-logs
+      summary: Create a task log
+      description: Create a new task log.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskLog'
+      responses:
+        201:
+          description: Created successfully.
+
+  /projects/{project_id}/latest-task-logs/{limit}:
+
+    get:
+      tags:
+        - task-logs
+      summary: Get latest task logs
+      description: Get a limited amount of task logs ordered by logged date.
+      parameters:
+        - name: project_id
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: path
+          description: The amount of task logs to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllTaskLogs'
+
+  #endregion
+
+
+
+  ########################
+  ###### COMPONENTS ######
+  ########################
+
+components:
+  schemas:
+
+    #region // USERS //
+
+    CreateUser:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: Emil Solgaard
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Emil Solgaard
+
+    AllUsers:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    AllUsersIds:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+
+    #endregion
+
+    #region // PROJECTS //
+
+    CreateProject:
+      type: object
+      required: [ project_master_id, name ]
+      properties:
+        name:
+          type: string
+          example: Scrum-like App
+        project_master_id:
+          type: integer
+          example: 1
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Scrum-like App
+        project_master_id:
+          type: integer
+          example: 1
+
+    #endregion
+
+    #region // TASKS //
+
+    CreateTask:
+      type: object
+      required: [ project_id, product_owner_id, estimate_minutes, title ]
+      properties:
+        project_id:
+          type: integer
+          example: 1
+        product_owner_id:
+          type: integer
+          example: 1
+        developer_id:
+          type: integer
+          example: 1
+        estimate_minutes:
+          type: integer
+          example: 30
+        title:
+          type: string
+          example: Code 'create task'
+        description:
+          type: string
+          example: Code the 'create task' functionality
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        project_id:
+          type: integer
+          example: 1
+        product_owner_id:
+          type: integer
+          example: 1
+        developer_id:
+          type: integer
+          example: 1
+        estimate_minutes:
+          type: integer
+          example: 30
+        completed:
+          type: boolean
+          example: true
+        spent_minutes:
+          type: integer
+          example: 20
+        started_at:
+          type: string
+          format: date-time
+          example: 2023-06-12T14:30:00Z
+        completed_at:
+          type: string
+          format: date-time
+          example: 2023-06-12T14:50:00Z
+        title:
+          type: string
+          example: Code 'create task'
+        description:
+          type: string
+          example: Code the 'create task' functionality
+
+    AllTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+
+    UpdateTask:
+      type: object
+      properties:
+        project_id:
+          type: integer
+          example: 1
+        product_owner_id:
+          type: integer
+          example: 1
+        developer_id:
+          type: integer
+          example: 1
+        estimate_minutes:
+          type: integer
+          example: 30
+        completed:
+          type: boolean
+          example: true
+        spent_minutes:
+          type: integer
+          example: 20
+        started_at:
+          type: string
+          format: date-time
+          example: 2023-06-12T14:30:00Z
+        completed_at:
+          type: string
+          format: date-time
+          example: 2023-06-12T14:50:00Z
+        title:
+          type: string
+          example: Code "create task"
+        description:
+          type: string
+          example: Code the 'create task' functionality
+
+    #endregion
+
+    #region // TASK-LOGS //
+
+    CreateTaskLog:
+      type: object
+      required: [ developer_id, task_id, task_status_id, title ]
+      properties:
+        developer_id:
+          type: integer
+          example: 1
+        task_id:
+          type: integer
+          example: 1
+        task_status_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Sudden dementia!
+        description:
+          type: string
+          example: I forgot how to code in Java! HELP!
+
+    TaskLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        developer_id:
+          type: integer
+          example: 1
+        task_id:
+          type: integer
+          example: 1
+        task_status_id:
+          type: integer
+          example: 1
+        logged_at:
+          type: string
+          format: date-time
+          example: 2023-06-12T14:40:00Z
+        title:
+          type: string
+          example: Sudden dementia!
+        description:
+          type: string
+          example: I forgot how to code in Java! HELP!
+
+    AllTaskLogs:
+      type: array
+      items:
+        $ref: '#/components/schemas/TaskLog'
+
+
+    #endregion

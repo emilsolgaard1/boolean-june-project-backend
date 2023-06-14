@@ -8,17 +8,15 @@ erDiagram
         int project_master_id FK "NOT NULL"
         text name "NOT NULL"
     }
-    users }o..|| projects : "contains"
+    users }o..o| projects : "contains"
     users {
         serial id PK
-        int team_id FK
+        int project_id FK
         text name "NOT NULL"
     }
     developers |o--|| users : "type of"
-    developers |o..o| tasks : "working on"
     developers {
         int user_id FK, UK "NOT NULL"
-        int task_id FK, UK
     }
     product_owners |o--|| users : "type of"
     product_owners {
@@ -28,14 +26,16 @@ erDiagram
     project_masters {
         int user_id FK, UK "NOT NULL" 
     }
+    tasks |o..o| developers : "assigned to"
     tasks }o--|| projects : "linked to"
     tasks }o--|| product_owners : "owned by"
     tasks {
         serial id PK
-        int team_id FK "NOT NULL"
+        int project_id FK "NOT NULL"
         int product_owner_id FK "NOT NULL"
-        boolean completed "NOT NULL"
+        int developer_id FK, UK
         int estimate_minutes "NOT NULL"
+        boolean completed "NOT NULL"
         int spent_minutes "NOT NULL"
         timestampz started_at
         timestampz completed_at
