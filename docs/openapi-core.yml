@@ -27,20 +27,72 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUser'
+              $ref: '#/components/schemas/UserCreateDTO'
       responses:
         201:
           description: Created successfully.
+        400:
+          description: One or more values are missing or invalid.
 
-  /projects/{project_id}/users:
+  /users/{userId}:
 
     get:
       tags:
         - users
-      summary: Get all users for a project
+      summary: Get a user by ID
+      description: Get a specific user by ID.
+      parameters:
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserReadDTO'
+        404:
+          description: No user with that userId was found.
+
+  /users/{userId}/project:
+
+    put:
+      tags:
+        - users
+      summary: Assign user to a project
+      description: Assign a single user to an existing project.
+      parameters:
+        - name: userId
+          in: path
+          description: The ID of the user
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateProjectDTO'
+      responses:
+        201:
+          description: Updated successfully.
+        400:
+          description: One or more values are missing or invalid.
+        404:
+          description: No user with that userId was found.
+
+  /projects/{projectId}/users:
+
+    get:
+      tags:
+        - users
+      summary: Get all users in a project
       description: Get a list of all users in a specific project.
       parameters:
-        - name: project_id
+        - name: projectId
           in: path
           description: The ID of the project
           required: true
@@ -51,28 +103,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllUsers'
-
-    put:
-      tags:
-        - users
-      summary: Assign users to a project
-      description: Assign a list of users to an existing project.
-      parameters:
-        - name: project_id
-          in: path
-          description: The ID of the project
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AllUsersIds'
-      responses:
-        201:
-          description: Updated successfully.
+                $ref: '#/components/schemas/List<UserReadNoProjectDTO>'
+        404:
+          description: No users were found with that projectId.
 
   #endregion
 
@@ -89,12 +122,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProject'
+              $ref: '#/components/schemas/ProjectCreateDTO'
       responses:
         201:
           description: Created successfully.
+        400:
+          description: One or more values are missing or invalid.
 
-  /projects/{project_id}:
+  /projects/{projectId}:
 
     get:
       tags:
@@ -102,7 +137,7 @@ paths:
       summary: Get a project by ID
       description: Get a specific project by its ID.
       parameters:
-        - name: project_id
+        - name: projectId
           in: path
           description: The ID of the project
           required: true
@@ -113,29 +148,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/ProjectReadDTO'
+        404:
+          description: No project with that projectId was found.
 
   #endregion
 
   #region // TASKS //
 
-  /tasks:
-
-    post:
-      tags:
-        - tasks
-      summary: Create a task
-      description: Create a new task.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTask'
-      responses:
-        201:
-          description: Created successfully.
-
-  /tasks/{task_id}:
+  /tasks/{taskId}:
 
     put:
       tags:
@@ -143,7 +164,7 @@ paths:
       summary: Update a task
       description: Update an existing task.
       parameters:
-        - name: task_id
+        - name: taskId
           in: path
           description: The ID of the task
           required: true
@@ -153,10 +174,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTask'
+              $ref: '#/components/schemas/TaskUpdateDTO'
       responses:
         201:
           description: Updated successfully.
+        400:
+          description: One or more values are missing or invalid.
+
+    get:
+      tags:
+        - tasks
+      summary: Get a task by ID
+      description: Get a specific task by ID.
+      parameters:
+        - name: taskId
+          in: path
+          description: The ID of the task
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskReadDTO'
+        404:
+          description: No task with that taskId was found.
 
     delete:
       tags:
@@ -164,7 +208,7 @@ paths:
       summary: Delete a task
       description: Delete an existing task.
       parameters:
-        - name: task_id
+        - name: taskId
           in: path
           description: The ID of the task
           required: true
@@ -173,15 +217,43 @@ paths:
       responses:
         200:
           description: Deleted successfully.
+        404:
+          description: No task with that projectId was found.
 
-  /projects/{project_id}/tasks:
+  /projects/{projectId}/tasks:
+
+    post:
+      tags:
+        - tasks
+      summary: Create a task for a project
+      description: Create a new task for an existing project.
+      parameters:
+        - name: projectId
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateDTO'
+      responses:
+        201:
+          description: Created successfully.
+        400:
+          description: One or more values are missing or invalid.
+        404:
+          description: No project with that projectId was found.
+
     get:
       tags:
         - tasks
       summary: Get all tasks for a project
       description: Get a list of all tasks for a given project.
       parameters:
-        - name: project_id
+        - name: projectId
           in: path
           description: The ID of the project
           required: true
@@ -192,16 +264,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllTasks'
+                $ref: '#/components/schemas/List<TaskReadDTO>'
+        404:
+          description: No tasks were found with that projectId.
 
-  /projects/{project_id}/completed-tasks:
+  /projects/{projectId}/completed-tasks:
     get:
       tags:
         - tasks
       summary: Get all completed tasks for a project
       description: Get a list of all completed tasks for a given project.
       parameters:
-        - name: project_id
+        - name: projectId
           in: path
           description: The ID of the project
           required: true
@@ -212,7 +286,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllTasks'
+                $ref: '#/components/schemas/List<TaskReadDTO>'
+        404:
+          description: No completed tasks were found with that projectId.
 
   #endregion
 
@@ -229,28 +305,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTaskLog'
+              $ref: '#/components/schemas/TaskLogCreateDTO'
       responses:
         201:
           description: Created successfully.
+        400:
+          description: One or more values are missing or invalid.
 
-  /projects/{project_id}/latest-task-logs/{limit}:
+  /task-logs/{taskLogId}:
 
     get:
       tags:
         - task-logs
-      summary: Get latest task logs
-      description: Get a limited amount of task logs ordered by logged date.
+      summary: Get a task log by ID
+      description: Get a specific task log by ID.
       parameters:
-        - name: project_id
+        - name: taskLogId
           in: path
-          description: The ID of the project
-          required: true
-          schema:
-            type: integer
-        - name: limit
-          in: path
-          description: The amount of task logs to return
+          description: The ID of the task log
           required: true
           schema:
             type: integer
@@ -259,7 +331,32 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllTaskLogs'
+                $ref: '#/components/schemas/TaskLogReadDTO'
+        404:
+          description: No task log with that taskLogId was found.
+
+  /projects/{projectId}/latest-5-task-logs:
+
+    get:
+      tags:
+        - task-logs
+      summary: Get 5 latest task logs
+      description: Get the 5 latest task logs ordered by logged date.
+      parameters:
+        - name: projectId
+          in: path
+          description: The ID of the project
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List<TaskLogReadDTO>'
+        404:
+          description: No task logs were found with that projectId.
 
   #endregion
 
@@ -274,7 +371,7 @@ components:
 
     #region // USERS //
 
-    CreateUser:
+    UserCreateDTO:
       type: object
       required: [name]
       properties:
@@ -282,7 +379,22 @@ components:
           type: string
           example: Emil Solgaard
 
-    User:
+    UserReadDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        projectId:
+          type: integer
+          nullable: true
+          example: 1
+        name:
+          type: string
+          example: Emil Solgaard
+
+
+    UserReadNoProjectDTO:
       type: object
       properties:
         id:
@@ -292,36 +404,36 @@ components:
           type: string
           example: Emil Solgaard
 
-    AllUsers:
+    List<UserReadNoProjectDTO>:
       type: array
       items:
-        $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/UserReadNoProjectDTO'
 
-    AllUsersIds:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
+    UserUpdateProjectDTO:
+      type: object
+      required: [projectId]
+      properties:
+        projectId:
+          type: integer
+          nullable: true
+          example: 1
 
     #endregion
 
     #region // PROJECTS //
 
-    CreateProject:
+    ProjectCreateDTO:
       type: object
-      required: [ project_master_id, name ]
+      required: [ projectMasterId, name ]
       properties:
         name:
           type: string
           example: Scrum-like App
-        project_master_id:
+        projectMasterId:
           type: integer
           example: 1
 
-    Project:
+    ProjectReadDTO:
       type: object
       properties:
         id:
@@ -330,7 +442,7 @@ components:
         name:
           type: string
           example: Scrum-like App
-        project_master_id:
+        projectMasterId:
           type: integer
           example: 1
 
@@ -338,20 +450,17 @@ components:
 
     #region // TASKS //
 
-    CreateTask:
+    TaskCreateDTO:
       type: object
-      required: [ project_id, product_owner_id, estimate_minutes, title ]
+      required: [ productOwnerId, estimateMinutes, title ]
       properties:
-        project_id:
+        productOwnerId:
           type: integer
           example: 1
-        product_owner_id:
+        developerId:
           type: integer
           example: 1
-        developer_id:
-          type: integer
-          example: 1
-        estimate_minutes:
+        estimateMinutes:
           type: integer
           example: 30
         title:
@@ -361,35 +470,35 @@ components:
           type: string
           example: Code the 'create task' functionality
 
-    Task:
+    TaskReadDTO:
       type: object
       properties:
         id:
           type: integer
           example: 1
-        project_id:
+        projectId:
           type: integer
           example: 1
-        product_owner_id:
+        productOwnerId:
           type: integer
           example: 1
-        developer_id:
+        developerId:
           type: integer
           example: 1
-        estimate_minutes:
+        estimateMinutes:
           type: integer
           example: 30
         completed:
           type: boolean
           example: true
-        spent_minutes:
+        spentMinutes:
           type: integer
           example: 20
-        started_at:
+        startedAt:
           type: string
           format: date-time
           example: 2023-06-12T14:30:00Z
-        completed_at:
+        completedAt:
           type: string
           format: date-time
           example: 2023-06-12T14:50:00Z
@@ -400,37 +509,34 @@ components:
           type: string
           example: Code the 'create task' functionality
 
-    AllTasks:
+    List<TaskReadDTO>:
       type: array
       items:
-        $ref: '#/components/schemas/Task'
+        $ref: '#/components/schemas/TaskReadDTO'
 
-    UpdateTask:
+    TaskUpdateDTO:
       type: object
       properties:
-        project_id:
+        productOwnerId:
           type: integer
           example: 1
-        product_owner_id:
+        developerId:
           type: integer
           example: 1
-        developer_id:
-          type: integer
-          example: 1
-        estimate_minutes:
+        estimateMinutes:
           type: integer
           example: 30
         completed:
           type: boolean
           example: true
-        spent_minutes:
+        spentMinutes:
           type: integer
           example: 20
-        started_at:
+        startedAt:
           type: string
           format: date-time
           example: 2023-06-12T14:30:00Z
-        completed_at:
+        completedAt:
           type: string
           format: date-time
           example: 2023-06-12T14:50:00Z
@@ -445,17 +551,17 @@ components:
 
     #region // TASK-LOGS //
 
-    CreateTaskLog:
+    TaskLogCreateDTO:
       type: object
-      required: [ developer_id, task_id, task_status_id, title ]
+      required: [ developerId, taskId, taskStatusId, title ]
       properties:
-        developer_id:
+        developerId:
           type: integer
           example: 1
-        task_id:
+        taskId:
           type: integer
           example: 1
-        task_status_id:
+        taskStatusId:
           type: integer
           example: 1
         title:
@@ -465,22 +571,21 @@ components:
           type: string
           example: I forgot how to code in Java! HELP!
 
-    TaskLog:
+    TaskLogReadDTO:
       type: object
       properties:
         id:
           type: integer
           example: 1
-        developer_id:
+        developerId:
           type: integer
           example: 1
-        task_id:
+        taskId:
           type: integer
           example: 1
-        task_status_id:
-          type: integer
-          example: 1
-        logged_at:
+        taskStatus:
+          $ref: '#/components/schemas/TaskStatus'
+        loggedAt:
           type: string
           format: date-time
           example: 2023-06-12T14:40:00Z
@@ -491,10 +596,19 @@ components:
           type: string
           example: I forgot how to code in Java! HELP!
 
-    AllTaskLogs:
+    List<TaskLogReadDTO>:
       type: array
       items:
-        $ref: '#/components/schemas/TaskLog'
+        $ref: '#/components/schemas/TaskLogReadDTO'
 
+    TaskStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: Critical problem!
 
     #endregion

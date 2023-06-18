@@ -2,10 +2,10 @@
 title: ER Diagram
 ---
 erDiagram
-    projects }o--|| project_masters : "managed by"
+    projects |o--|| project_masters : "managed by"
     projects {
         serial id PK
-        int project_master_id FK "NOT NULL"
+        int project_master_id FK, UK "NOT NULL"
         text name "NOT NULL"
     }
     users }o..o| projects : "contains"
