@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@CrossOrigin(exposedHeaders = "*")
 @RestController
 public class ProjectController {
     @Autowired

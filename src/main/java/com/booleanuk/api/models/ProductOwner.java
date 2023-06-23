@@ -10,7 +10,7 @@ public class ProductOwner {
     @Id
     private int id;
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = true)
     @MapsId
     private User user;
     //endregion

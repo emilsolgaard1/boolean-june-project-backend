@@ -13,7 +13,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @OneToOne
-    @JoinColumn(name = "project_master_id", nullable = false)
+    @JoinColumn(name = "project_master_id", nullable = false, unique = true)
     @JsonIgnoreProperties("project")
     private ProjectMaster projectMaster;
     @OneToMany(mappedBy = "project")

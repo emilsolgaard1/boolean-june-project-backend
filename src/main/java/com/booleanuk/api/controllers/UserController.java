@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@CrossOrigin(exposedHeaders = "*")
 @RestController
 public class UserController {
     @Autowired
@@ -52,7 +54,7 @@ public class UserController {
     }
     //endregion
     //region // GET //
-    @GetMapping("users/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<UserReadDTO> get(@PathVariable int userId) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(

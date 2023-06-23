@@ -21,7 +21,7 @@ public class Task {
     @JsonIgnoreProperties("tasks")
     private ProductOwner productOwner;
     @ManyToOne
-    @JoinColumn(name = "developer_id")
+    @JoinColumn(name = "developer_id", unique = true)
     @JsonIgnoreProperties("tasks")
     private Developer developer;
     @Column(name = "estimate_minutes", nullable = false)
